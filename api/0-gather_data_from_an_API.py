@@ -1,7 +1,8 @@
 #!/usr/bin/python3
+
 """Script to return info about todo list progress"""
-from requests import get
 from sys import argv
+from requests import get
 
 
 def information_employee():

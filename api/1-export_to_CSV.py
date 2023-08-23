@@ -1,15 +1,18 @@
 #!/usr/bin/python3
-"""Script to export data in the CSV format"""
-from requests import get
+
+"""Script to return info about todo list progress"""
 from sys import argv
-import csv
+from requests import get
 
 
 def information_employee():
     """Returns information about employees"""
     id_employee = int(argv[1])
+    id_employee = int(argv[1])
     employee_name = ""
-    task_data = []
+    number_of_done_task = 0
+    total_number_of_task = 0
+    task_title = []
 
     url_users = 'https://jsonplaceholder.typicode.com/users'
     url_todos = 'https://jsonplaceholder.typicode.com/todos'
@@ -23,27 +26,20 @@ def information_employee():
 
         for user in response_json_usr:
             if (user['id'] == id_employee):
-                employee_name = user['username']
+                employee_name = user['name']
 
                 for tod in response_json_tod:
                     if tod['userId'] == id_employee:
-                        task_data.append(tod)
+                        total_number_of_task += 1
+                        if tod['completed'] is True:
+                            number_of_done_task += 1
+                            task_title.append(tod['title'])
 
-        # Call the function to export data to CSV
-        export_to_csv(id_employee, employee_name, task_data)
-
-
-def export_to_csv(user_id, employee_name, task_data):
-    """Exports the employee information to a CSV file"""
-    filename = f"{user_id}.csv"
-
-    with open(filename, mode='w', newline='') as csvfile:
-        csv_writer = csv.writer(csvfile, delimiter=',',
-                                quotechar='"', quoting=csv.QUOTE_ALL)
-
-        for task in task_data:
-            csv_writer.writerow(
-                [user_id, employee_name, task['completed'], task['title']])
+        print('Employee {} is done with tasks({}/{}):'
+              .format(employee_name, number_of_done_task,
+                      total_number_of_task))
+        for title in task_title:
+            print('\t {}'.format(title))
 
 
 if __name__ == "__main__":
